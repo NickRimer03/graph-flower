@@ -43,6 +43,12 @@ export default class Graph {
     return find ? find.children : null;
   }
 
+  erase() {
+    this.nodes.length = 0;
+
+    return this;
+  }
+
   get nodesCount() {
     return this.nodes.length;
   }

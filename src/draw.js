@@ -1,9 +1,12 @@
 const SVGNS = "http://www.w3.org/2000/svg";
 
 function addGroup(point) {
+  const { name } = point;
   const group = document.createElementNS(SVGNS, "g");
+  group.setAttribute("data-name", name);
+
   const tooltip = document.createElementNS(SVGNS, "title");
-  tooltip.textContent = point.name;
+  tooltip.textContent = name;
 
   group.appendChild(tooltip);
   group.appendChild(addCircle(point));
@@ -33,33 +36,31 @@ function addText({ id, x, y }) {
   return text;
 }
 
-function addLine({ x1, y1, x2, y2 }) {
+function addLine({ x1, y1, x2, y2, name1, name2 }) {
   const line = document.createElementNS(SVGNS, "line");
   line.setAttribute("x1", x1);
   line.setAttribute("y1", y1);
   line.setAttribute("x2", x2);
   line.setAttribute("y2", y2);
   line.setAttribute("stroke", "rgb(110, 64, 170)");
+  line.setAttribute("data-name", `${name1}-${name2}`);
 
   return line;
 }
 
-export default points => {
+export default (nodes, edges) => {
   const svg = document.createElementNS(SVGNS, "svg");
   const [w, h] = [1024, 768];
   svg.setAttribute("width", w);
   svg.setAttribute("height", h);
   svg.setAttribute("viewBox", `${-w / 2} ${-h / 2} ${w} ${h}`);
   // edges
-  points.forEach(({ x, y, parent }) => {
-    if (parent !== null) {
-      const parentPoint = points.find(({ id }) => id === parent);
-      svg.append(addLine({ x1: parentPoint.x, y1: parentPoint.y, x2: x, y2: y }));
-    }
+  edges.forEach(({ p1: { x: x1, y: y1, name: name1 }, p2: { x: x2, y: y2, name: name2 } }) => {
+    svg.append(addLine({ x1, y1, x2, y2, name1, name2 }));
   });
 
   // nodes
-  points.forEach(point => {
+  nodes.forEach(point => {
     svg.appendChild(addGroup(point));
   });
 
