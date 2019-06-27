@@ -1,9 +1,10 @@
 const SVGNS = "http://www.w3.org/2000/svg";
 
 function addGroup(point) {
-  const { name } = point;
+  const { name, o } = point;
   const group = document.createElementNS(SVGNS, "g");
   group.setAttribute("data-name", name);
+  group.style.opacity = o;
 
   const tooltip = document.createElementNS(SVGNS, "title");
   tooltip.textContent = name;
@@ -36,7 +37,7 @@ function addText({ id, x, y }) {
   return text;
 }
 
-function addLine({ x1, y1, x2, y2, name1, name2 }) {
+function addLine({ x1, y1, x2, y2, name1, name2, o }) {
   const line = document.createElementNS(SVGNS, "line");
   line.setAttribute("x1", x1);
   line.setAttribute("y1", y1);
@@ -44,6 +45,7 @@ function addLine({ x1, y1, x2, y2, name1, name2 }) {
   line.setAttribute("y2", y2);
   line.setAttribute("stroke", "rgb(110, 64, 170)");
   line.setAttribute("data-name", `${name1}-${name2}`);
+  line.style.opacity = o;
 
   return line;
 }
@@ -56,7 +58,7 @@ export default (nodes, edges) => {
   svg.setAttribute("viewBox", `${-w / 2} ${-h / 2} ${w} ${h}`);
   // edges
   edges.forEach(({ p1: { x: x1, y: y1, name: name1 }, p2: { x: x2, y: y2, name: name2 } }) => {
-    svg.append(addLine({ x1, y1, x2, y2, name1, name2 }));
+    svg.append(addLine({ x1, y1, x2, y2, name1, name2, o: nodes.find(({ name }) => name === name1).o }));
   });
 
   // nodes
